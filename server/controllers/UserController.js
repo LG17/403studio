@@ -21,7 +21,10 @@ module.exports = {
             res.status(200).send({
                 code: 200,
                 msg: '恭喜，注册成功',
-                user,
+                user: {
+                    email: user.email,
+                    id: user.id
+                },
                 token: tokenSign(user)
             })
         } catch (error) {
@@ -51,18 +54,21 @@ module.exports = {
                 res.status(200).send({
                     code: 200,
                     msg: '登录成功',
-                    user: user.toJSON(),
+                    user: {
+                        email: user.email,
+                        id: user.id
+                    },
                     token: tokenSign(user),
                 })
             } else {
-                res.send({
+                res.status(403).send({
                     code: 40002,
                     error: '登录失败，用户名或密码错误'
                 })
             }
         } catch (error) {
             // console.log(error)
-            res.status(400).send({
+            res.status(403).send({
                 code: 40003,
                 error: '登录失败，用户名或密码错误'
             })
