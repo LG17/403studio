@@ -18,14 +18,14 @@ module.exports = {
         try {
             const user = await User.create(req.body)
             console.log(req.body)
-            res.status(201).send({
-                code: 201,
+            res.status(200).send({
+                code: 200,
                 msg: '恭喜，注册成功',
                 user,
                 token: tokenSign(user)
             })
         } catch (error) {
-            res.status(400).send({
+            res.send({
                 code: 40001,
                 error: error.errors[0].message
             })

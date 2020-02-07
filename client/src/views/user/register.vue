@@ -7,14 +7,15 @@
       :model="registerForm"
       :rules="registerRules"
     >
+      <div class="register-error">{{ this.error }}</div>
       <el-form-item prop="email" label="邮箱">
         <el-input v-model="registerForm.email"></el-input>
       </el-form-item>
       <el-form-item prop="password" label="密码">
-        <el-input v-model="registerForm.password"></el-input>
+        <el-input v-model="registerForm.password" type="password"></el-input>
       </el-form-item>
       <el-form-item prop="comparePassword" label="确认密码">
-        <el-input v-model="registerForm.comparePassword"></el-input>
+        <el-input v-model="registerForm.comparePassword" type="password"></el-input>
       </el-form-item>
       <el-button type="primary" style="width: 100%" native-type="submit" @click="register" :loading="loading">注册</el-button>
       <div class="register-info">如果已经注册账号请<router-link :to="{ name: 'login' }">点击登录</router-link></div>
@@ -23,9 +24,12 @@
 </template>
 
 <script>
+import UserService from '../../services/UserService'
+
 export default {
   data () {
     return {
+      error: '',
       registerForm: {
         email: '',
         password: '',
@@ -59,12 +63,26 @@ export default {
   },
   methods: {
     register () {
-      this.$refs['registerForm'].validate((valid) => {
-        console.log(valid)
+      this.$refs['registerForm'].validate(async (valid) => {
         if (valid) {
           this.loading = true
-          // console.log(1111111)
-          // TODO: register api
+          this.error = ''
+          try {
+            const response = await UserService.register(
+              {
+                email: this.registerForm.email,
+                password: this.registerForm.password
+              }
+            )
+            if (response.data.code !== 200) {
+              this.error = response.data.error
+            } else {
+              this.$router.push('/')
+            }
+            this.loading = false
+          } catch (error) {
+            console.log(error)
+          }
         }
       })
     }
@@ -91,6 +109,9 @@ export default {
         font-size: 0.9rem;
         margin-top: 10px;
         color: #909399;
+      }
+      .register-error {
+        color: #f56c6c;
       }
     }
   }
