@@ -7,5 +7,8 @@ export default {
   },
   register (data) {
     return request.post('/users/register', data)
+  },
+  login (data) {
+    return request.post('/users/login', data)
   }
 }

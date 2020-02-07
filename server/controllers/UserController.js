@@ -25,9 +25,16 @@ module.exports = {
                 token: tokenSign(user)
             })
         } catch (error) {
-            res.send({
+            // console.log(error.errors)
+            let err = []
+            if (error.errors) {
+                error.errors.forEach(validateError => {
+                    err.push(validateError.message)
+                })
+            }
+            res.status(400).send({
                 code: 40001,
-                error: error.errors[0].message
+                error: err.join(',')
             })
         }
     },
@@ -48,14 +55,14 @@ module.exports = {
                     token: tokenSign(user),
                 })
             } else {
-                res.status(403).send({
+                res.send({
                     code: 40002,
                     error: '登录失败，用户名或密码错误'
                 })
             }
         } catch (error) {
-            console.log(error)
-            res.status(403).send({
+            // console.log(error)
+            res.status(400).send({
                 code: 40003,
                 error: '登录失败，用户名或密码错误'
             })

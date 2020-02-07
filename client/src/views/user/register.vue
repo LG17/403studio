@@ -77,11 +77,17 @@ export default {
             if (response.data.code !== 200) {
               this.error = response.data.error
             } else {
+              // TODO: 将用户信息和token保存到vuex
               this.$router.push('/')
             }
             this.loading = false
           } catch (error) {
-            console.log(error)
+            if (error.response.data.error) {
+              this.error = error.response.data.error
+            } else {
+              this.error = '注册失败，请稍后重试'
+            }
+            this.loading = false
           }
         }
       })
@@ -112,6 +118,7 @@ export default {
       }
       .register-error {
         color: #f56c6c;
+        padding-bottom: 15px;
       }
     }
   }
