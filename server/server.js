@@ -9,7 +9,7 @@ app.use(morgan('combined'))  //  网站服务端访问日志
 
 require('./router')(app)  // 路由
 
-sequelize.sync({ force: true })
+sequelize.sync({  })
     .then( () => {
         app.listen(8002, () => {
             console.log('Server has been started on port 8002')
