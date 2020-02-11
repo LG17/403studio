@@ -33,4 +33,7 @@ module.exports = (app) => {
 
     app.get('/movies',
         MovieController.getAll) // 获取所有电影
+    
+    app.delete('/movies/:id',
+        MovieController.delete) // 删除对应电影
 }

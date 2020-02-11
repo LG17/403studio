@@ -26,7 +26,7 @@ const routes = [
     path: '/movies',
     component: () => import('../views/layout/movie.vue'),
     children: [
-      { path: 'create', name: 'movie-create', component: () => import('../views/movie/create.vue'), meta: { auth: true } },
+      { path: 'create', name: 'movie-create', alias: 'edit', component: () => import('../views/movie/create.vue'), meta: { auth: true } },
       { path: 'detail/:id', name: 'movie-detail', component: () => import('../views/movie/detail.vue') },
       { path: 'list', name: 'movie-list', component: () => import('../views/movie/list.vue') }
     ]

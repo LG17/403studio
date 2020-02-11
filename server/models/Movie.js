@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
                 }
             }
         },
-        gener: {
+        genre: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <base-box type="danger" title="新增电影">
+    <base-box type="danger" :title="title">
       <el-form ref="movie-form" :model="form" :rules="rules" label-width="100px">
         <el-row>
           <el-col :span="12">
@@ -9,8 +9,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="电影分类" prop="gener">
-              <el-input v-model="form.gener" placeholder="请输入电影分类"></el-input>
+            <el-form-item label="电影分类" prop="genre">
+              <el-input v-model="form.genre" placeholder="请输入电影分类"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -20,7 +20,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="电影年份" prop="year">
-              <el-input v-model="form.year" placeholder="请输入发行年份"></el-input>
+              <el-input type="number" v-model="form.year" placeholder="请输入发行年份"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -66,10 +66,13 @@
 </template>
 
 <script>
+import MovieService from 'services/MovieService'
 
 export default {
   data () {
     return {
+      title: '新增电影',
+      isEdit: false,
       loading: false,
       form: {
         name: '',
@@ -77,7 +80,7 @@ export default {
         director: '',
         rating: '',
         imdb_id: '',
-        gener: '',
+        genre: '',
         poster: '',
         description: '',
         film_length: ''
@@ -86,30 +89,58 @@ export default {
         name: { required: true, message: '请输入电影名称', trigger: 'blur' },
         year: { required: true, message: '请输入电影发行年份', trigger: 'blur' },
         director: { required: true, message: '请输入导演', trigger: 'blur' },
-        rate: { required: true, message: '请输入电影评分', trigger: 'blur' },
+        rating: { required: true, message: '请输入电影评分', trigger: 'blur' },
         imdb_id: { required: true, message: '请输入电影IMDB ID', trigger: 'blur' },
-        gener: { required: true, message: '请输入电影类型', trigger: 'blur' },
+        genre: { required: true, message: '请输入电影类型', trigger: 'blur' },
         poster: { required: true, message: '请输入电影海报', trigger: 'blur' },
         description: { required: true, message: '请输入电影描述', trigger: 'blur' },
         film_length: { required: true, message: '请输入电影时长', trigger: 'blur' }
       }
     }
   },
+  async created () {
+    if (this.$route.query.id) {
+      this.isEdit = true
+      this.title = '编辑电影'
+      try {
+        const response = await MovieService.getMovieById(this.$route.query.id)
+        this.form = response.data.movie
+      } catch (error) {
+        this.$message.error('数据查询异常请稍后再试')
+      }
+    } else {
+      this.isEdit = false
+    }
+  },
   methods: {
     submit (formName) {
-      this.loading = true
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          // TODO: 调用接口服务，将信息存入后台
-          console.log(this.form)
-          this.$message({
-            message: '信息保存成功！页面将在2s后跳转到信息列表页面',
-            type: 'success',
-            duration: 2000,
-            onClose: () => {
-              this.$router.push({ name: 'movie-list' })
+          this.loading = true
+          try {
+            if (this.isEdit) {
+              await MovieService.updateMovie(this.$route.query.id, this.form)
+            } else {
+              await MovieService.create(this.form)
             }
-          })
+            this.$message({
+              message: '信息保存成功！页面将在2s后跳转到信息列表页面',
+              type: 'success',
+              duration: 2000,
+              onClose: () => {
+                this.$router.push({ name: 'movie-list' })
+              }
+            })
+          } catch (error) {
+            console.log(error.response)
+            if (typeof error.response.data !== 'undefined' && error.response.data.error) {
+              this.$message.error(error.response.data.error)
+            } else {
+              this.$message.error(`[${error.response.status}],数据处理异常请稍后再试`)
+            }
+          } finally {
+            this.loading = false
+          }
         } else {
           this.loading = false
           return false

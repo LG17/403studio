@@ -3,10 +3,10 @@
     <base-box type="primary" title="电影列表">
       <template v-slot:title-addon>
         <div class="filter">
-          <label class="active">最新</label>
-          <label>高分</label>
-          <label>动作</label>
-          <label>剧情</label>
+          <label @click="orderBy('updatedAt')" :class="{active:0==current}">最新</label>
+          <label @click="orderBy('rating')" :class="{active:1==current}">高分</label>
+          <label @click="filterByGenre('喜剧')" :class="{active:2==current}">喜剧</label>
+          <label @click="filterByGenre('剧情')" :class="{active:3==current}">剧情</label>
         </div>
         <div v-if="$store.state.isUserLogin" class="text-success" style="margin-left: auto; cursor: pointer" @click="$router.push({name: 'movie-create'})">
           <i class="el-icon-plus"></i>新增电影
@@ -27,28 +27,53 @@
 </template>
 
 <script>
+import MovieService from 'services/MovieService'
+
 export default {
   data () {
     return {
+      current: 0,
       movies: []
     }
   },
-  created () {
-    // TODO: 调用接口获取数据
-    this.movies = [
-      {
-        id: 1,
-        name: '哪吒之魔童降世',
-        poster: 'img/movie1.jpeg',
-        rating: 8.6
-      },
-      {
-        id: 2,
-        name: '哪吒2',
-        poster: 'img/movie1.jpeg',
-        rating: 8.6
+  async created () {
+    try {
+      const response = await MovieService.getAll()
+      // console.log(response)
+      this.movies = response.data.movies
+    } catch (error) {
+      this.$message.error('数据查询异常请稍后再试')
+    }
+  },
+  methods: {
+    async orderBy (field) {
+      if (field === 'updateAt') {
+        this.current = 0
+      } else if (field === 'rating') {
+        this.current = 1
       }
-    ]
+      let query = `orderby=${field}`
+      try {
+        const response = await MovieService.getAll(query)
+        this.movies = response.data.movies
+      } catch (error) {
+        this.$message.error('数据查询异常请稍后再试')
+      }
+    },
+    async filterByGenre (field) {
+      if (field === '喜剧') {
+        this.current = 2
+      } else if (field === '剧情') {
+        this.current = 3
+      }
+      let query = `genre=${field}`
+      try {
+        const response = await MovieService.getAll(query)
+        this.movies = response.data.movies
+      } catch (error) {
+        this.$message.error('数据查询异常请稍后再试')
+      }
+    }
   }
 }
 </script>

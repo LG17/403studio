@@ -2,7 +2,11 @@
   <div>
     <base-box type="primary" title="电影详情">
       <template v-slot:title-addon>
-        <div v-if="$store.state.isUserLogin" class="text-primary" style="margin-left: auto; cursor: pointer" @click="$router.push({name: 'movie-create'})">
+        <div
+          v-if="$store.state.isUserLogin"
+          class="text-primary"
+          style="margin-left: auto; cursor: pointer"
+          @click="$router.push({path: '/movies/edit', query: { id: $route.params.id }})">
           <i class="el-icon-edit"></i>编辑电影
         </div>
       </template>
@@ -11,7 +15,7 @@
         <img :src="movie.poster" :alt="movie.name" class="movie-poster">
         <ul class="movie-meta">
           <li><label class="text-info">导演：</label> {{ movie.director }} </li>
-          <li><label class="text-info">类型：</label> {{ movie.gener }} </li>
+          <li><label class="text-info">类型：</label> {{ movie.genre }} </li>
           <li><label class="text-info">评分：</label>
             <el-rate
               style="display: inline-block"
@@ -33,25 +37,20 @@
 </template>
 
 <script>
+import MovieService from 'services/MovieService'
+
 export default {
   data () {
     return {
-      movie: null
+      movie: {}
     }
   },
-  created () {
-    // TODO: 接口接收数据
-    this.movie = {
-      id: 1,
-      name: '哪吒之魔童降世',
-      gener: '剧情/喜剧/奇幻',
-      director: '饺子',
-      year: '2019',
-      poster: 'img/movie1.jpeg',
-      rating: 8.6,
-      imdb_id: 'djk',
-      film_length: '123分钟',
-      description: '魔童降世。。。'
+  async created () {
+    try {
+      const response = await MovieService.getMovieById(this.$route.params.id)
+      this.movie = response.data.movie
+    } catch (error) {
+      this.$message.error('数据查询异常请稍后再试')
     }
   }
 }
