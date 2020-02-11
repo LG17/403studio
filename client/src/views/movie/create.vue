@@ -132,7 +132,6 @@ export default {
               }
             })
           } catch (error) {
-            console.log(error.response)
             if (typeof error.response.data !== 'undefined' && error.response.data.error) {
               this.$message.error(error.response.data.error)
             } else {
