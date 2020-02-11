@@ -42,7 +42,7 @@ export default {
       // console.log(response)
       this.movies = response.data.movies
     } catch (error) {
-      this.$message.error('数据查询异常请稍后再试')
+      this.$message.error(`[${error.response.status}]，数据查询异常请稍后再试`)
     }
   },
   methods: {
@@ -57,7 +57,7 @@ export default {
         const response = await MovieService.getAll(query)
         this.movies = response.data.movies
       } catch (error) {
-        this.$message.error('数据查询异常请稍后再试')
+        this.$message.error(`[${error.response.status}]，数据查询异常请稍后再试`)
       }
     },
     async filterByGenre (field) {
@@ -71,7 +71,7 @@ export default {
         const response = await MovieService.getAll(query)
         this.movies = response.data.movies
       } catch (error) {
-        this.$message.error('数据查询异常请稍后再试')
+        this.$message.error(`[${error.response.status}]，数据查询异常请稍后再试`)
       }
     }
   }

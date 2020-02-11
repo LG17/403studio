@@ -91,7 +91,7 @@ module.exports = {
         Object.assign(operations, { order: [[orderBy, 'DESC']] })
         try {
             const movies = await Movie.findAll(operations)
-            res.send({
+            res.status(200).send({
                 code: 200,
                 movies: movies
             })
